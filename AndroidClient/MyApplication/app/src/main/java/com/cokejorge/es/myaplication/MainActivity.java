@@ -1,5 +1,6 @@
 package com.cokejorge.es.myaplication;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.IBinder;
 import android.renderscript.ScriptGroup;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +21,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         doBindService();
+        //Si está el BackgroundService ejecutandose en segundo plano, lo terminamos
+        this.onBackPressed();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void doBindService() {

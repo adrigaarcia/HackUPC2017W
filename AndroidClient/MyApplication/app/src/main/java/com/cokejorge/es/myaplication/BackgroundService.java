@@ -24,6 +24,8 @@ package com.cokejorge.es.myaplication;
         import android.provider.Settings;
         import android.support.v4.app.ActivityCompat;
         import android.support.v4.app.NotificationCompat;
+        import android.support.v4.app.NotificationCompat.Action;
+
         import android.util.Log;
         import android.widget.Toast;
 
@@ -47,6 +49,7 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
     int index = 0;
     MediaPlayer mp = new MediaPlayer();
 
+
     //A través de este objeto se recibe información de la notificacion
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -56,6 +59,7 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
             unregisterReceiver(this);
         }
     };
+
 
     //Metodo necesario para extender la clase Service
     @Override
@@ -87,36 +91,44 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
     /**
      * Metodo encargado de terminar el servicio (this)
      */
+
     public void terminarService(){
         this.stopSelf();
     }
+
 
     /**
      * Metodo encargado de mostrar una notifiación al usuario. En caso de que ya exista, la elimina y muestra una nueva.
      * @param context
      */
     public void sendNotification(Context context) {
+
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel("Geome",0);
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = TaskStackBuilder.create(context)
-                .addNextIntentWithParentStack(intent)
-                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        //mNotificationManager.cancel("Geome",0);
+        Intent intent = new Intent(context, AlertActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
+
+        //PendingIntent pendingIntent = TaskStackBuilder.create(context).addNextIntentWithParentStack(intent).getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send,
+                        "ALERTA", pendingIntent)
+                        .build();
         Intent intentDelete = new Intent(NOTIFICATION_DELETED_ACTION);
         PendingIntent pendintIntent = PendingIntent.getBroadcast(context, 0, intentDelete, 0);
-        registerReceiver(receiver, new IntentFilter(NOTIFICATION_DELETED_ACTION));
+        //registerReceiver(receiver, new IntentFilter(NOTIFICATION_DELETED_ACTION));
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Geome")
+                        .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+                        .setContentTitle("Monitorizacion")
                         .setContentText("Monitorizando localizacion en segundo plano...")
                         .setAutoCancel(true)
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setDeleteIntent(pendintIntent);
+                        .setDeleteIntent(pendintIntent)
+                        .addAction(action);
         mBuilder.setContentIntent(pendingIntent);
         //Notificacion TAG-KEY -> Geome-0
         mNotificationManager.notify("Geome", 0, mBuilder.build());
-        Toast.makeText(getApplicationContext(), "[GeoME] Descarte la notifiación para terminar con la monitorización en segundo plano.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Descarte la notifiación para terminar con la monitorización en segundo plano.", Toast.LENGTH_LONG).show();
     }
 
     /**
