@@ -13,6 +13,7 @@ package com.cokejorge.es.myaplication;
         import android.media.MediaPlayer;
         import android.os.Bundle;
         import android.os.IBinder;
+        import android.os.StrictMode;
         import android.os.Vibrator;
         import android.provider.Settings;
         import android.support.v4.app.ActivityCompat;
@@ -20,6 +21,14 @@ package com.cokejorge.es.myaplication;
 
         import android.util.Log;
         import android.widget.Toast;
+
+        import com.android.volley.DefaultRetryPolicy;
+        import com.android.volley.Request;
+        import com.android.volley.Response;
+        import com.android.volley.VolleyError;
+        import com.android.volley.toolbox.StringRequest;
+        import com.android.volley.toolbox.Volley;
+
 
 /**
  * Clase encargada de Gestionar el Servicio en Segundo Plano
@@ -30,6 +39,72 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
     private LocationManager mLocationManager = null;
     private static final String NOTIFICATION_DELETED_ACTION = "NOTIFICATION_DELETED";
     private LocationListener mLocationListener = new LocationListener(LocationManager.GPS_PROVIDER);
+
+    public String url = "http://10.192.151.191:8080/";
+
+    //public static URI uri;
+
+    public String idUser = "";
+    public String lon = "";
+    public String lat = "";
+    public static String estado = "0";
+
+
+
+    public void getId() {
+        // Request a string response
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        idUser = response;
+                        Log.e(TAG, "Respuesta Get:" + response);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                // Error handling
+                Log.e(TAG, "Error:" + error.getMessage());
+                error.printStackTrace();
+                getId();
+            }
+        });
+        // Add the request to the queue
+        Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    public void postUser () {
+        // Request a string response
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url+idUser+"/"+lon+"/"+lat+"/"+estado,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e(TAG, "Respuesta Post:" + response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Error handling
+                Log.e(TAG, "Error:" + error.getMessage());
+                postUser();
+
+            }
+        });
+
+// Add the request to the queue
+        Volley.newRequestQueue(this).add(stringRequest);
+    }
+
+    public static void enableAlert(){
+        estado = "1";
+    }
+
+    public static void disableAlert(){
+        estado = "0";
+    }
+
 
     Vibrator vibrator;
 
@@ -68,6 +143,13 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand - SERVICE");
         //String value = intent.getExtras().getString("uri");
+
+        //Enabling ThreadPolicy
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        //Iniciamos conexion
+        getId();
 
         //Mostramos notificacion
         sendNotification(this);
@@ -172,7 +254,10 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
         @Override
         public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
+            lat = String.valueOf(location.getLatitude());
+            lon = String.valueOf(location.getLongitude());
             mLastLocation = location;
+            postUser();
         }
 
         @Override

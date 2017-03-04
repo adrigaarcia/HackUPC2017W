@@ -11,12 +11,12 @@ public class AlertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert);
-        ConnectionImplementator.enableAlert();
+        BackgroundService.enableAlert();
         Button boton = (Button) findViewById(R.id.button2);
         boton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConnectionImplementator.disableAlert();
+                BackgroundService.disableAlert();
                 finish();
             }
         });
