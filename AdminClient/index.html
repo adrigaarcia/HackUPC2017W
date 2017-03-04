@@ -5,23 +5,21 @@
     <title>Admin Client</title>
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <style media="screen">
-      #mapid { height: 700px; }
+      #mapid { height: 725px; }
     </style>
-    <!-- VueJS -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://cdn.jsdelivr.net/vue.resource/1.2.1/vue-resource.min.js"></script>
-    <script src="script.js"></script>
-    <!-- Bulma -->
+    <!-- BULMA -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css" />
+    <!-- JQUERY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   </head>
   <body>
-    <div id="app">
       <nav class="nav">
         <div class="nav-left">
-          <a class="nav-item" href="https://github.com/adrigaarcia/HackUPC2017W">
+          <a class="nav-item" href="https://github.com/adrigaarcia/HackUPC2017W" target="_blank">
             <span class="icon">
               <i class="fa fa-github"></i>
             </span>
@@ -37,17 +35,20 @@
         <!-- This "nav-menu" is hidden on mobile -->
         <!-- Add the modifier "is-active" to display it on mobile -->
         <div class="nav-right nav-menu">
-
-          <span class="nav-item">
-            <button v-on:click="actualizar" class="button is-info is-outlined">Actualizar</button>
-            <button v-if="!actualizacionAutomatica" v-on:click="autoRefresh" class="button is-info is-outlined">Actualizar Automaticamente</button>
-            <button v-if="actualizacionAutomatica" v-on:click="autoRefresh" class="button is-info">Actualizar Automaticamente</button>
-          </span>
         </div>
       </nav>
 
        <div id="mapid"></div>
 
-    </div>
+       <div class="container">
+         <div class="notification">
+           <button type="button" onclick="getData()" class="button is-info paddi">Actualizar</button>
+        <button type="button" onclick="pintar(51.505, -0.08)" class="button is-success">Pintar</button>
+         </div>
+       </div>
+
+
   </body>
+  <script src="script.js"></script>
+
 </html>

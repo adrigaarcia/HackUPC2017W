@@ -1,74 +1,100 @@
-/*jshint esversion: 6 */
+var atRiskUsers = L.layerGroup([]);
+var goodUsers = L.layerGroup([]);
+var clusters = L.layerGroup([]);
 
-window.onload = function () {
-  var app = new Vue({
-    el: '#app',
-    data: {
-      message: 'Hello Vue!',
-      actualizacionAutomatica: false,
-      clusterData: {}
-    },
-    methods: {
-      actualizar: function () {
-        if (this.actualizacionAutomatica){
-          //alert("ASD");
-          // GET /someUrl
-          this.$http.get('http://localhost:8080/cluster').then(function (response) {
-            // get body data
-            //this.clusterData = response.body;
-            console.log(response.body);
-            this.clusterData = JSON.parse(response.body);
 
-          }, function (response) {
-            // error callback
-          });
-        }
-      },
-      autoRefresh: function (){
-        this.actualizacionAutomatica = !this.actualizacionAutomatica;
+var mymap = L.map('mapid', {
+    layers: [atRiskUsers, goodUsers, clusters]}).setView([51.505, -0.09], 8);
+
+    var overlayMaps = {
+        "Users - At Risk": atRiskUsers,
+        "Users - Safe": goodUsers,
+        "Clusters": clusters
+    };
+L.control.layers(null,overlayMaps).addTo(mymap);
+
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+  maxZoom: 18,
+  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+  '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+  'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+  id: 'mapbox.streets'
+}).addTo(mymap);
+
+function getData(){
+
+  $.ajax({
+    method: "GET",
+    url: 'http://10.192.151.191:8080/cluster'
+  }).done(function(msg) {
+
+    console.log(msg);
+    $.each(msg, function(idx, val){
+      //console.log(idx);
+      //console.log(val);
+      var totalLat = 0;
+      var totalLon = 0;
+      var i = 0;
+      var color, fillCol;
+      var layer = null;
+      if (idx < 0){
+        color = 'green';
+        fillCol = '#00ff38';
+        layerUsers = goodUsers;
       }
-    }
+      else{
+        color = 'red';
+        fillCol = '#f03';
+        layerUsers = atRiskUsers;
+      }
+      val.forEach(function(val2){
+        totalLat += parseFloat(val2.lat);
+        totalLon += parseFloat(val2.lon);
+        i ++;
+        pintarUser(parseFloat(val2.lon).toFixed(10), parseFloat(val2.lat).toFixed(10), color, fillCol, layerUsers);
+      });
+      if (idx != -1 && idx != 0) pintar(parseFloat(totalLon/i).toFixed(10),parseFloat(totalLat/i).toFixed(10), color, fillCol);
+    });
+
+    //console.log(msg);
   });
-
-  window.setInterval(function(){
-      app.actualizar();
-  }, 5000);
-
-var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-
-	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-		maxZoom: 18,
-		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-		id: 'mapbox.streets'
-	}).addTo(mymap);
-
-	L.marker([51.5, -0.09]).addTo(mymap)
-		.bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-
-	L.circle([51.508, -0.11], 500, {
-		color: 'red',
-		fillColor: '#f03',
-		fillOpacity: 0.5
-	}).addTo(mymap).bindPopup("I am a circle.");
-
-	L.polygon([
-		[51.509, -0.08],
-		[51.503, -0.06],
-		[51.51, -0.047]
-	]).addTo(mymap).bindPopup("I am a polygon.");
+  /*
+  this.$http.get('http://10.192.151.191:8080/cluster').then(function (response) {
+    // get body data
+    //this.clusterData = response.body;
 
 
-	var popup = L.popup();
+  }, function (response) {
+    console.log(response);
+    // error callback
+  });
+  */
+}
 
-	function onMapClick(e) {
-		popup
-			.setLatLng(e.latlng)
-			.setContent("You clicked the map at " + e.latlng.toString())
-			.openOn(mymap);
-	}
+function pintarUser(lat,lon, col, fillCol, layerUsers){
+  L.circle([lat, lon], 10, {
+    color: col,
+    fillColor: fillCol,
+    fillOpacity: 0.2
+  }).addTo(layerUsers).bindPopup("I am a circle.");
+}
 
-	mymap.on('click', onMapClick);
+function pintar(lat,lon,col,fillCol){
+  console.log(lat+"-"+lon);
+  L.circle([lat, lon], 600, {
+    color: col,
+    fillColor: fillCol,
+    fillOpacity: 0.2
+  }).addTo(clusters).bindPopup("I am a circle.");
+}
 
+window.onload = function() {
+  getData();
 };
+
+/*
+window.setInterval(function(){
+app.actualizar();
+}, 5000);
+*/
