@@ -1,18 +1,18 @@
-print(__doc__)
-
 import numpy as np
+import matplotlib.pyplot as plt
 
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
 from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
 
-centers = [[5, 5], [-5, -5], [5, -5], [-5,5]]
-X, labels_true = make_blobs(n_samples=1500, n_features=2, centers=centers, cluster_std=1,
-                            random_state=0)
-print(type(X))
 
-def clusterizar(X):
+#centers = [[5, 5], [-5, -5], [5, -5], [-5,5]]
+#X, labels_true = make_blobs(n_samples=1500, n_features=2, centers=centers, cluster_std=1,
+#                            random_state=0)
+#print(type(X))
+
+def clusterize(X):
     X = StandardScaler().fit_transform(X)
 
     db = DBSCAN(eps=0.2, min_samples=10).fit(X)
@@ -34,9 +34,7 @@ def clusterizar(X):
     print("Silhouette Coefficient: %0.3f"
           % metrics.silhouette_score(X, labels))
 
-    import matplotlib.pyplot as plt
-
-    # Black removed and is used for noise instead.
+   # Black removed and is used for noise instead.
     unique_labels = set(labels)
     colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
     for k, col in zip(unique_labels, colors):
