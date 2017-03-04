@@ -12,7 +12,7 @@ X, labels_true = make_blobs(n_samples=1500, n_features=2, centers=centers, clust
                             random_state=0)
 print(type(X))
 
-def mi_funcion(X):
+def clusterizar(X):
     X = StandardScaler().fit_transform(X)
 
     db = DBSCAN(eps=0.2, min_samples=10).fit(X)
