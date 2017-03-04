@@ -1,20 +1,13 @@
 package com.cokejorge.es.myaplication;
 
-/**
- * Created by Jorge Martinez on 12/4/16.
- */
-
         import android.Manifest;
         import android.app.NotificationManager;
         import android.app.PendingIntent;
         import android.app.Service;
-        import android.app.TaskStackBuilder;
         import android.content.BroadcastReceiver;
         import android.content.Context;
         import android.content.Intent;
-        import android.content.IntentFilter;
         import android.content.pm.PackageManager;
-        import android.content.res.AssetFileDescriptor;
         import android.location.Location;
         import android.location.LocationManager;
         import android.media.MediaPlayer;
@@ -24,15 +17,9 @@ package com.cokejorge.es.myaplication;
         import android.provider.Settings;
         import android.support.v4.app.ActivityCompat;
         import android.support.v4.app.NotificationCompat;
-        import android.support.v4.app.NotificationCompat.Action;
 
         import android.util.Log;
         import android.widget.Toast;
-
-        import java.io.IOException;
-        import java.net.URI;
-        import java.net.URISyntaxException;
-        import java.util.ArrayList;
 
 /**
  * Clase encargada de Gestionar el Servicio en Segundo Plano
@@ -104,18 +91,17 @@ public class BackgroundService extends Service implements MediaPlayer.OnCompleti
     public void sendNotification(Context context) {
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //mNotificationManager.cancel("Geome",0);
+
         Intent intent = new Intent(context, AlertActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, Intent.FILL_IN_ACTION);
 
-        //PendingIntent pendingIntent = TaskStackBuilder.create(context).addNextIntentWithParentStack(intent).getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Action action =
                 new NotificationCompat.Action.Builder(android.R.drawable.ic_menu_send,
                         "ALERTA", pendingIntent)
                         .build();
         Intent intentDelete = new Intent(NOTIFICATION_DELETED_ACTION);
         PendingIntent pendintIntent = PendingIntent.getBroadcast(context, 0, intentDelete, 0);
-        //registerReceiver(receiver, new IntentFilter(NOTIFICATION_DELETED_ACTION));
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
                         .setSmallIcon(android.R.drawable.ic_menu_mylocation)
