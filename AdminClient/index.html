@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Admin Client</title>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <style media="screen">
+      #mapid { height: 700px; }
+    </style>
+    <!-- VueJS -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/vue.resource/1.2.1/vue-resource.min.js"></script>
+    <script src="script.js"></script>
+    <!-- Bulma -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css" />
+  </head>
+  <body>
+    <div id="app">
+      <nav class="nav">
+        <div class="nav-left">
+          <a class="nav-item" href="https://github.com/adrigaarcia/HackUPC2017W">
+            <span class="icon">
+              <i class="fa fa-github"></i>
+            </span>
+          </a>
+        </div>
+
+        <div class="nav-center">
+          <a class="nav-item" >
+            <h2 class="subtitle">ADMIN VIEW</h2>
+          </a>
+        </div>
+
+        <!-- This "nav-menu" is hidden on mobile -->
+        <!-- Add the modifier "is-active" to display it on mobile -->
+        <div class="nav-right nav-menu">
+
+          <span class="nav-item">
+            <button v-on:click="actualizar" class="button is-info is-outlined">Actualizar</button>
+            <button v-if="!actualizacionAutomatica" v-on:click="autoRefresh" class="button is-info is-outlined">Actualizar Automaticamente</button>
+            <button v-if="actualizacionAutomatica" v-on:click="autoRefresh" class="button is-info">Actualizar Automaticamente</button>
+          </span>
+        </div>
+      </nav>
+
+       <div id="mapid"></div>
+
+    </div>
+  </body>
+</html>
