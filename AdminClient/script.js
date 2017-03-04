@@ -11,11 +11,12 @@ window.onload = function () {
     methods: {
       actualizar: function () {
         if (this.actualizacionAutomatica){
-          alert("ASD");
+          //alert("ASD");
           // GET /someUrl
-          this.$http.get('http://10.192.151.191:8080/cluster').then(function (response) {
+          this.$http.get('http://localhost:8080/cluster').then(function (response) {
             // get body data
             //this.clusterData = response.body;
+            console.log(response.body);
             this.clusterData = JSON.parse(response.body);
 
           }, function (response) {
