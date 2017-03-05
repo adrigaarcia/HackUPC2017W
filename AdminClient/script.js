@@ -4,7 +4,7 @@ var clusters = L.layerGroup([]);
 
 
 var mymap = L.map('mapid', {
-    layers: [atRiskUsers, goodUsers, clusters]}).setView([51.505, -0.09], 8);
+    layers: [atRiskUsers, goodUsers, clusters]}).setView([51.505, -0.09], 10);
 
     var overlayMaps = {
         "Users - At Risk": atRiskUsers,
@@ -45,7 +45,7 @@ function getData(){
       }
       else{
         color = 'red';
-        fillCol = '#f03';
+        fillCol = '#ff5073';
         layerUsers = atRiskUsers;
       }
       val.forEach(function(val2){
